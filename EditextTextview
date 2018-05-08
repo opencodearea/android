@@ -1,0 +1,1255 @@
+http://www.hermosaprogramacion.com/2016/03/edittext-android/
+
+La Clase EditText En Android
+Cómo decía al inicio, un EditText es la expansión de un TextView con la capacidad de editar su  contenido para recibir texto por parte del usuario. Visualmente estos proyectan una línea inferior del color del acento del tema y un texto auxiliar llamado hint que representa el contenido asociado al view.
+
+Ejemplo de EditText cambiando de estado normal a focused
+
+Para incluir este view en un layout usa la etiqueta <EditText>.
+
+Por ejemplo…
+
+Abre el archivo actividad_principal.xml y agrega el siguiente código:
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.herprogramacion.camposdetexto.ActividadPrincipal">
+
+    <EditText
+        android:id="@+id/campo_texto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:hint="Texto de entrada" />
+</RelativeLayout>
+En la anterior definición se centra un EditText en el RelativeLayout, cuyo ancho se ajusta al padre y el alto al contenido. Además se usa el texto auxiliar “Text de entrada” en el atributo android:hint.
+
+Al ver la ventana Preview verás lo siguiente:
+
+Android Studio: EditText en ventana Preview
+
+Si deseas personalizar un EditText basate en los atributos de TextView.
+
+Obtener Texto Del EditText
+Para retornar el valor de texto de un EditText usa el método getText().
+
+Este no retorna directamente un objeto String, si no Editable. La cual es una interfaz de texto dinámico y configurable. Sin embargo al usar toString() es posible obtener la cadena plana.
+
+Ejemplo:
+
+Añadir un campo de texto y agrega un botón por debajo, que al ser clickeado muestre en el logcat el valor actual.
+
+Solución
+
+1. Modifica el layout para que el botón aparezca por debajo del EditText. Luego asigna un manejador de clicks al botón con el atributo onClick. El nombre del manejador será verValor.
+
+actividad_principal.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.herprogramacion.camposdetexto.ActividadPrincipal">
+
+    <EditText
+        android:id="@+id/campo_texto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:hint="Teléfono"
+        android:inputType="phone" />
+
+    <Button
+        android:id="@+id/boton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/campo_texto"
+        android:layout_centerHorizontal="true"
+        android:onClick="verValor"
+        android:text="Guardar" />
+</RelativeLayout>
+2. Abre ActividadPrincipal.java para definir el método verValor(). Dentro de este obtén la instancia del view con la referencia R.id.campo_texto y loguea el resultado de getText().
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+
+public class ActividadPrincipal extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.actividad_principal);
+    }
+
+    public void verValor(View v){
+        EditText campoTexto = (EditText) findViewById(R.id.campo_texto);
+        Log.d("Valor ET", campoTexto.getText().toString());
+    }
+}
+3. Ejecuta la app y presiona el botón luego de escribir algún número.
+
+Resultados de logcat en Android Studio
+
+Tipos de Entrada en un Campo de Texto
+El atributo android:inputType condiciona la entrada de texto al usuario para ingresar caracteres acordes al requerimiento del EditText.
+
+Además de evitar que se escriban dichos caracteres, este atributo determina el tipo de teclado virtual que aparecerá ante el usuario y determina otros tipos de comportamientos.
+
+Por ejemplo…
+
+Si tu campo de texto es para un número telefónico usa el valor phone.
+
+<EditText
+    android:id="@+id/campo_texto"
+    android:layout_width="match_parent"
+    android:inputType="phone"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:hint="Teléfono" />
+Si ejecutas la app verás cómo el teclado se reduce a un keyboard tipo teléfono:
+
+android:inputType con valor phone en teclado virtual
+
+Hay una inmensa cantidad de valores para inputType, sin embargo te dejo una tabla con los de uso frecuente:
+
+Constante	Descripción
+text	Recibe texto plano simple
+textPersonName	Texto correspondiente al nombre de una persona
+textPassword	Protege los caracteres que se van escribiendo con puntos
+numberPassword	Contraseña de solo números enmascarada con puntos
+textEmailAddress	Texto que será usado en un campo para emails
+phone	Texto asociado a un número de teléfono
+textPostalAddress	Para ingresar textos asociados a una dirección postal
+textMultiLine	Permite múltiples líneas en el campo de texto
+time	Texto para determinar la hora
+date	Texto para determinar la fecha
+number	Texto con caracteres numéricos
+numberSigned	Permite números con signo
+numberDecimal	Para ingresar números decimales
+Especificar la Cantidad Máxima de Caracteres con maxLength
+Para forzar el tamaño del texto que recibirá el EditText usa el atributo android:maxLength.
+
+Especifica un número entero positivo para determinar cuántos caracteres podrá haber. Este atributo es de gran utilidad cuando las reglas de negocio indican restricciones a las entradas del usuario.
+
+Ejemplo:
+
+Crear EditText para el nombre del usuario. Este  no debe tener más de 8 caracteres
+
+Solución
+
+Agrega maxLength con el valor de 8 al campo:
+
+<EditText
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/nombre_usuario"
+    android:inputType="text"
+    android:hint="Nick"
+    android:maxLength="8"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true" />
+Si pruebas el resultado, el campo no te permitirá ingresar más de 8 caracteres.
+
+EditText con una Línea
+Reduce la capacidad del campo de texto a una sola línea con el atributo android:singleLine. De lo contrario el EditText aceptará múltiples línea en su contenido y el teclado virtual usará como tecla de acción el salto de línea en vez de la confirmación.
+
+Tecla salto de línea en teclado virtual de Android
+
+El valor por defecto es false, pero si usas un valor para textInput, entonces el valor de singleLine será true automáticamente.
+
+Ejemplo:
+
+Añadir un campo de texto para el nombre del conductor.
+
+Solución
+
+Añade el valor true a android:singleLine del editor.
+
+<EditText
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/nombre_conductor"
+    android:hint="Nombre del conductor"
+    android:singleLine="true"
+    android:layout_centerVertical="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentEnd="true" />
+El resultado esperado será el siguiente:
+
+Tecla done en teclado virtual Android
+
+La tecla de confirmación permitirá cerrar el teclado indicando que estás satisfecho con la edición.
+
+La Propiedad ems
+La unidad relativa em se usa para determinar el tamaño de un carácter según la cantidad de puntos que use la fuente del texto.
+
+Quiere decir que hablar de 3em representa 3 veces el tamaño de la fuente utilizada. Si esta mide 12 puntos, entonces 3em = 36puntos.
+
+En un EditText podemos extender su ancho dependiendo de la cantidad especificado en el atributo android:ems. Para el atributo android:width debe tener asignada la constante wrap_content.
+
+Ejemplo:
+
+Añadir un EditText para la determinar la marca de un producto, cuyo ancho sea 5em.
+
+Solución
+
+Asigna el valor 5 al atributo android:ems. Puedes especificar como tipo de entrada texto plano.
+
+<EditText
+    android:id="@+id/marca_producto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:ems="5"
+    android:hint="Marca"
+    android:inputType="text" />
+El contenido se vería reducido al siguiente espacio:
+
+Propiedad ems en EditText Android
+
+EditText Solo con Números del 0 al 9
+Para filtrar los caracteres que podrán ser aceptados en un EditText es posible usar el atributo android:digits con una lista de elementos permitidos.
+
+Un ejemplo muy común es dar paso solo a los dígitos del 0 al 9 en un campo de texto. Para conseguirlo pones la lista "01234567890 " con un espacio al final si deseas también ese carácter.
+
+Ejemplo:
+
+Crear campo de texto para el número de tarjeta de crédito del cliente. Se deben permitir solo 19 caracteres (3 espacios entre bloques de 4 caracteres) y solo dígitos del 0 al 9.
+
+Solución
+
+Usa android:digits con la lista de valores mencionada. Limita la cantidad de elementos con maxLength a 19, usa como tipo de entrada number para mostrar un teclado acorde y limita a una sola línea con singleLine.
+
+<EditText
+    android:id="@+id/campo_tarjeta"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:digits="1234567890 "
+    android:singleLine="true"
+    android:maxLength="19"
+    android:inputType="number"
+    android:ems="9"
+    android:hint="Número de Tarjeta" />
+El resultado sería el siguiente:
+
+Android: EditText para tarjeta de crédito
+
+Si intentas presionar las teclas del punto, línea o coma, no funcionará la entrada debido al filtro establecido.
+
+Ocultar Teclado Virtual Programáticamente
+En ocasiones el teclado no se cierra automáticamente luego de confirmar una acción en un EditText y es necesario cerrarlo manualmente a través del código.
+
+Para hacerlo, usa la clase InpuMethodManager la cual se encarga de la gestión de los métodos y procedimientos de entradas en el dispositivo.
+
+Obtén su instancia a través del método getSystemService() junto a la constante Context.INPUT_METHOD_SERVICE. Luego llama el método hideSoftInputFromInputMethod().
+
+Este recibe como parámetro la interfaz de comunicación del view que ha iniciado el teclado (obtenla con getWindowsToken()) y un conjunto de banderas para especificar comportamientos adicionales (usa 0).
+
+Veamos:
+
+// Ocultar teclado virtual
+InputMethodManager imm =
+        (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+donde v es la instancia del view que inicia la entrada.
+
+EditText no Editable
+Al igual que todos los views, un campo de texto también puede cambiar a estado deshabilitado con el atributo android:enabled y el valor false.
+
+Si deseas hacerlo programáticamente usa setEnabled() con el valor false.
+
+Por ejemplo…
+
+<EditText
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/campo_no_editable"
+    android:enabled="false"
+    android:hint="No Editable" />
+EditText no editable
+
+Manejar Focos Entre Campos De Texto
+El foco es una característica de los views que determina si están activos hacia el usuario. Para los EditTexts dicho estado se representa cuando activan el cursor para la escritura y su borde inferior cambia el color.
+
+EditText con foco
+
+El atributo asociado a esta propiedad es android:focusable, cuyo valor por defecto es true. Si deseas evitar que un campo de texto se le transmita el foco entonces usa false.
+
+<EditText
+    android:id="@+id/campo_sin_foco"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:hint="Sin foco" />
+Por el lado programático equivalente existe el método setFocusable(). Solo asigna los literales true o false.
+
+findViewById(R.id.campo_sin_foco).setFocusable(false);
+Entregar foco a un EditText
+Si deseas darle el foco a un campo de texto programáticamente usa el método requestFocus() de la clase View.
+
+Adicionalmente puedes determinar el cambio a través de isFocusabled() para averiguar si un campo tiene la capacidad de enfocarse.
+
+Haz el ejercicio…
+
+Dentro de un LineaLayout pon dos campos con los id campo_1 y campo_2 respectivamente.
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <EditText
+        android:id="@+id/campo_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Foco 1" />
+
+    <EditText
+        android:id="@+id/campo_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Foco 2" />
+
+
+</LinearLayout>
+Por defecto el sistema entregará el foco al primer campo de texto, sin embargo tú harás que el foco se dirija al segundo al comprobar que el primero sea enfocable.
+
+Esto requiere que abras la actividad principal, obtengas los campos y llames a requestFocus():
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+public class ActividadPrincipal extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.actividad_no_editable);
+
+        if (findViewById(R.id.campo_1).isFocusable()) {
+            findViewById(R.id.campo_2).requestFocus();
+        }
+    }
+}
+Lo que resulta en:
+
+Uso de requestFocus() en EditText
+
+Ordenar focos
+Cuando tienes dentro de un más de dos EditText, habrá controladores direccionales (dpads, gestos, trackballs, etc) en los dispositivos para navegar entre los controles dependiendo de la dirección elegida.
+
+La siguiente tabla muestra los atributos para especificar los views para ordenar el foco:
+
+Constante	Descripción	Método
+android:nextFocusDown	Determina el siguiente campo a recibir el foco si el usuario navega hacia abajo	setNextFocusDownId()
+android:nextFocusLeft	Determina el siguiente campo a recibir el foco si el usuario navega a la izquierda	setNextFocusLeftId()
+android:nextFocusRight	Foco al siguiente campo cuando el usuario navega a la derecha	setNextFocusRightId()
+android:nextFocusUp	Foco al siguiente campo cuando el usuario navega hacia arriba	setNextFocusUpId()
+Según los dispositivos que soporte tu app, así mismo debes testear que teclas o entradas usará el usuario para desplazarse entre los views.
+
+Por ejemplo. Un caso sencillo.
+
+Usar la tecla de dirección derecha para saltar al próximo EditText y la tecla izquierda para retornar al primero
+
+A campo_1 añade el id de campo_2 en su atributo android:nextFocusDown. A campo_2 añade el id de campo_1 en android:nextFocusUp.
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <EditText
+        android:id="@+id/campo_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Foco 1"
+        android:nextFocusRight="@+id/campo_2"
+        android:singleLine="true" />
+
+    <EditText
+        android:id="@+id/campo_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Foco 2"
+        android:nextFocusLeft="@+id/campo_1"
+        android:singleLine="true" />
+
+</LinearLayout>
+Al correr la app usa las teclas para ir de un campo a otro con derecha e izquierda.
+
+Mover Posición Del Cursor
+La clase EditText trae consigo el  método setSelection() para mover el cursor de edición a una determinada posición especificada por un índice entero con base 0.
+
+Ejemplo
+
+Mover programáticamente el cursor de un campo de texto a la cuarta posición.
+
+Solución
+
+1. Crea un EditText de prueba que contenga en su atributo text la palabra “Cursor”.
+
+<EditText
+    android:id="@+id/campo_cursor"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Cursor"
+    android:hint="Selección"        
+    android:singleLine="true" />
+2. Abre la actividad principal y obtén la instancia de este campo. Luego usa el método setSelection() con parámetro 3 al interior de onCreate().
+
+public class ActividadPrincipal extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.actividad_principal);
+
+        EditText campo1 = (EditText) findViewById(R.id.campo_cursor);
+        campo1.setSelection(3);
+    }
+}
+3. La ejecución nos mostrará el movimiento:
+
+Mover cursor de EditText
+
+Obtener la Posición del Cursor
+De forma intuitiva, la obtención de la posición del cursor debe ser con los métodos getSelectionStart() y getSelectionEnd().
+
+El primero obtiene la posición del manejador izquierdo y la segunda la del derecho al momento de realizar una selección. Sin embargo cuando no existe selección, ambos método retornan el mismo valor que será la posición del cursor.
+
+Si logueas la posición del EditText anterior, el código quedaría así:
+
+public class ActividadPrincipal extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.actividad_principal);
+
+        EditText campo1 = (EditText) findViewById(R.id.campo_cursor);
+        Log.d("Posición cursor:", String.valueOf(campo1.getSelectionEnd()));
+    }
+}
+El resultado espera es la posición 0:
+
+Obtener posición cursor de EditText
+
+Seleccionar Texto Programáticamente
+En este caso se usa una variación del método setSelection(), cuyos parámetros son la posición inicial y final del texto seleccionado.
+
+Ejemplo:
+
+Seleccionar la primera palabra del EditText con el texto “Dos Palabras”
+
+Solución
+
+1. Inicialmente crea el EditText para satisfacer la situación:
+
+<EditText
+    android:id="@+id/campo_dos_palabras"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Dos Palabras"
+    android:hint="Selección"
+    android:singleLine="true" />
+2. Crea un algoritmo para determinar cuál es la terminación de la primera palabra. Se sabe que la posición inicial es 0 y que la final es un carácter de espacio.
+
+En ese caso puedes una de las opciones es usar una sentencia for para recorrer carácter por carácter hasta dar con la coincidencia y así almacenar el índice final.
+
+public class ActividadPrincipal extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.actividad_principal);
+
+        EditText campo1 = (EditText) findViewById(R.id.campo_dos_palabras);
+        Editable texto = campo1.getText();
+
+        int start = 0;
+        int end = 0;
+
+        for (int i = start; i < texto.length(); i++) {
+
+            if (texto.charAt(i) == ' ') {
+                end = i;
+            }
+        }
+
+        campo1.setSelection(start, end);
+    }
+}
+3. La selección se ve en la siguiente ilustración:
+
+Seleccionar texto de EditText
+
+Nota: El método extendSelection() recibe el índice final partiendo que se desea seleccionar desde la posición 0. Si se usa en el ejemplo anterior, no se necesitaría la variable start.
+
+Seleccionar Todo el Texto
+Hay un método de conveniencia para seleccionar todo el texto del campo llamado selectAll().
+
+Seleccionar todo en el ejemplo anterior sería:
+
+EditText campo1 = (EditText) findViewById(R.id.campo_dos_palabras);
+campo1.selectAll();
+Crear EditText En Android Studio
+En este apartado vas a crear un ejemplo básico de login para comprender cómo ubicar un EditText desde el panel de diseño en Android Studio.
+
+El layout contiene un campo de texto para el correo, otro por debajo para la contraseña y un botón que confirma el inicio de validación y autenticación.
+
+1. Crea un nuevo archivo XML en tu carpeta layout llamado actividad_login.xml. Este debe tener como nodo raíz un LinearLayout.
+
+Android Studio: Wizard new resource file
+
+Recuerda que para crear un nuevo layout solo das click derecho en res/layout y luego seleccionas New > Layout resource file.
+
+Nuevo archivo layout en Android
+
+2. Ve a la pestaña Design referente al layout.
+
+Pestaña Design en Android Studio
+
+3. En la sección de layouts en Android vimos que un LinearLayout puedes estar orientado de forma vertical u horizontal. En nuestro caso se encuentra vertical ya que necesitamos los campos uno debajo de otro.
+
+Para poner el primer campo de texto ubícate en la ventana Palette y luego busca la sección Text Fields. Una vez allí verás una variedad de campos de textos asociados al tipo de entrada.
+
+Sección Text Fields en la paleta de Android Studio
+
+4. Arrastra a la parte superior central del linear layout un EditText del tipo E-mail.
+
+Ubicar text field tipo e-mail en linearlayout
+
+5. Ve al panel de propiedades y asigna al campo id el identificador campo_correo. También asigna a hint el texto “Correo”.
+
+Properties de un EditText en Android Studio
+
+Observa que si despliegas la propiedad inputType verás en forma de checkbox todas las constantes posibles para marcar como tipo de entrada.
+
+Lista de constantes para inputType en panel Properties
+
+Debido a que elegimos un campo de texto tipo E-mail Android Studio marcó automáticamente la constante textEmailAddress.
+
+Por el momento la pre se vería de la siguiente forma.
+
+Preview de EditText para correo en Android Studio
+
+6. Ahora agregar por debajo un campo de texto con entrada para contraseñas (Password).
+
+Campo de texto tipo password en LinearLayout
+
+Usa como id el nombre campo_contrasena y cambia el hint a “Contraseña”.
+
+La Preview sería la siguiente:
+
+Preview de correo y contraseña 
+
+7. Lo siguiente es ubicar el botón para iniciar sesión por debajo del password. Ponle como texto de acción “Iniciar sesión”, añade 16dp de margen superior, usa negrilla para el estilo del texto y escribe el id cómo boton_inicio_sesion.
+
+El resultado:
+
+Formulario de login en Android Studio
+
+8. Finalmente el código completo en la definición XML se vería de la siguiente forma:
+
+actividad_login.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <EditText
+        android:id="@+id/campo_correo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:ems="10"
+        android:hint="Correo"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/campo_contrasena"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="Contraseña"
+        android:inputType="textPassword"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/boton_inicio_sesion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:singleLine="true"
+        android:text="Iniciar sesión"
+        android:textStyle="bold" />
+</LinearLayout>
+Al correr la aplicación verás el teclado virtual para correos electrónicos y los puntos que protegen el campo del password:
+
+Login en Android
+
+Editores De Métodos De Entrada (IME)
+Android permite añadir una acción adicional al teclado para proporcionar una elección rápida cuando el usuario ha terminado de escribir su texto en el EditText.
+
+Atributo android:imeOptions en EditText
+
+Para indicar el tipo de acción usa el atributo android:imeOptions. De lo contrario el sistema determinará cuál es la mejor opción.
+
+A continuación te dejo una tabla con acciones populares:
+
+Constante	Descripción	Icono
+actionGo	Representa la acción de ejecutar alguna tarea que llevará al usuario a determinados resultados	Constante actionGo en android:imeOptions
+actionSearch	Especifica que realizará una búsqueda con el texto que se acaba de agregar al campo de texto	Constante actionSearch para android:imeOptions
+actionSend	Se usa para indicar que se realizará una operación de envío de un contenido asociado al contenido del campo	Constante actionSend para android:imeOptions
+actionNext	Tecla para realizar una operación del tipo “siguiente”. Normalmente se usa para asignar el foco al TextField posterior	Constante actionNext para android:imeOptions
+actionDone	Determina que se ha llevado a cabo satisfactoriamente la edición cerrando el teclado virtual	Constante actionDone para android:imeOptions
+actionPrevious	Acción que lleva al usuario a un campo previamente aceptado.	Constante actionPrevious para android:imeOptions
+Por ejemplo…
+
+<EditText
+    android:id="@+id/campo_mensaje"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:imeOptions="actionSend"
+    android:inputType="text"
+    android:singleLine="true" />
+Para los campos que soportan múltiples líneas tendrás la tecla de acción para salto que se ve al inicio de esta sección.
+
+Si no usas singleLine con el valor de true, la acción que hayas puesto en imeOptions será reemplazada por el salto. A excepción del modo landscape, donde podrás ver en pantalla completa la edición y un botón de acción adicional en la parte derecha (extract mode).
+
+EditText múltiples líneas con acción Done
+
+Si deseas cambiar el texto del botón que sale en la acción por el tuyo propio, entonces usa el atributo android:imeActionLabel.
+
+Cambiar android:imeActionLabel en EditText
+
+Solo agrega la cadena o recurso correspondiente al atributo:
+
+<EditText
+    android:id="@+id/campo_mensaje"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:imeOptions="actionSend"
+    android:imeActionLabel="Enviar"
+    android:inputType="text"
+    android:singleLine="true" />
+Manejo De Eventos
+Usar TextWatcher Para Cambios De Texto
+En ocasiones necesitarás realizar tareas justo en el momento en que cambia el texto de un EditText. Acciones como validar los datos en tiempo real, formatear la entrada del usuario, agregar caracteres extra mientras se escribe, etc.
+
+La interfaz que resuelve este tipo de situaciones se llama TextWatcher y se agrega a un campo de texto con el método addTextChangedListener().
+
+Esta clase te provee los siguientes controladores:
+
+afterTextChanged(): Se llama cuando el cambio ya ha sido realizado. Esto permitirá acceder al texto que quedó luego del resultado.
+beforeTextChanged(): Se llama antes de que se escriba el texto. Esto te permite saber el estado del texto actual y de la sección que será reemplazada.
+onTextChanged(): Se llama cuando se ha reemplazado la sección del texto. Con sus parámetros permite saber qué porción del texto viejo se reemplazó y cuantos caracteres nuevos se agregaron.
+Ejemplo:
+
+Calcular en tiempo real la cantidad de caracteres de un campo de texto
+
+Solución
+
+1.  Crea un nuevo layout llamado actividad_contador.xml y agrega un RelativeLayout como nodo raíz.
+
+2. Centra en el layout un EditText que acepte múltiples líneas (máximo 3) y por debajo alineado a la derecha ubica un TextView.
+
+Ten en cuenta que las múltiples líneas las declaras con el tipo de entrada textMultiLine. Para determinar visualmente tres usa el atributo android:lines. Adicionalmente limita el tamaño vertical con android:maxLines.
+
+El código sería el siguiente:
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <EditText
+        android:id="@+id/campo_mensaje"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center_horizontal"
+        android:inputType="textMultiLine"
+        android:lines="3"
+        android:maxLines="3" />
+
+    <TextView
+        android:id="@+id/texto_contador"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/campo_mensaje"
+        android:layout_alignRight="@+id/campo_mensaje"
+        android:layout_below="@+id/campo_mensaje"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+</RelativeLayout>
+Y el resultado de previsualización este:
+
+EditText multiLine para contador
+
+3. Abre ActividadPrincipal y cambia el inflado del layout con el identificador R.layout.actividad_contador. Recuerda que esto lo encuentras en onCreate().
+
+setContentView(R.layout.actividad_contador);
+Ahora obtén la instancia del campo de texto. Luego usa el método addTextChangedListener() y déjalo entreabierto.
+
+Digita “new T” para que Android Studio te haga la sugerencia de crear implementación completa de un TextWatcher anónimo.
+
+Sugerencia para creación de TextWatcher en Android Studio
+
+Al presionar ENTER o dar click, se crea el código automáticamente de los controladores de la clase.
+
+Controladores de la intefaz TextWatcher
+
+4. El objetivo es contar los caracteres del contenido del EditText, así que afterTextChanged() u onTextChanged() te serán útiles, ya que ambos proporcionan la cadena actual del campo de texto.
+
+Debido a que no es necesario saber el tamaño de la cadena actual o su posición inicial, puedes decantarte por afterTextChanged().
+
+Decidido esto, sigue los pasos lógicos para contar los caracteres:
+
+Obtener instancia del TextView
+Obtener tamaño del texto con el método length() del parámetro s
+Asignar valor con setText() al texto
+Lo anterior traducido a código sería:
+
+ActividadPrincipal.java
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
+import android.widget.TextView;
+
+public class ActividadPrincipal extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.actividad_contador);
+
+        EditText campoMensaje = (EditText) findViewById(R.id.campo_mensaje);
+        campoMensaje.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                TextView contador = (TextView) findViewById(R.id.texto_contador);
+                String tamanoString = String.valueOf(s.length());
+                contador.setText(tamanoString);
+            }
+        });
+    }
+}
+5. Ejecuta la aplicación, escribe algo de texto y comprueba que se realice la cuenta al tipear.
+
+Contador de caracteres de EditText
+
+Controlar Eventos de Botones de Acción
+En la sección de acciones IME viste cómo declarar una acción auxiliar en el teclado virtual a través del atributo android:imeOptions. Lo que sigue es realizar una operación al momento de presionar estos botones de acción.
+
+Para ello usaremos la escucha TextView.OnEditorActionListener junto a su controlador onEditorAction(). Dentro de este método agregaremos las instrucciones que deseamos ejecutar al presionar el botón de acción en el teclado.
+
+Para asignar una instancia de la interfaz usa setOnEditorActionListener() desde el EditText.
+
+Ejemplo:
+
+Imprimir un mensaje en pantalla cuando se presione el botón de acción para buscar clientes por el nombre.
+
+Solución:
+
+1. Crea un nuevo layout con el nombre de actividad_busqueda.xml y añade como nodo raíz un RelativeLayout. Luego ubica un EditText en el centro con el hint “Buscar cliente” y la acción actionSearch.
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/campo_busqueda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:ems="10"
+        android:hint="Buscar cliente"
+        android:imeOptions="actionSearch"
+        android:singleLine="true" />
+</RelativeLayout>
+2. Abre la actividad principal e implementa el siguiente algoritmo:
+
+Obtener la instancia del campo de texto.
+Asigna escucha anónima con setOnEditorActionListener().
+Sobrescribir onEditorAction() para mostrar Toast con el texto del EditText.
+Usar la constante IME_ACTION_SEARCH de la clase EditorInfo para comparar el id de la acción(actionId).
+Caso positivo > Cerrar el teclado virtual programáticamente
+El texto del campo se obtiene con el primer parámetro(v) de onEditorAction().
+
+El código quedaría así:
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class ActividadPrincipal extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.actividad_busqueda);
+
+        EditText campoBusqueda = (EditText) findViewById(R.id.campo_busqueda);
+
+        campoBusqueda.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean procesado = false;
+
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    // Mostrar mensaje
+                    Toast.makeText(ActividadPrincipal.this,
+                            "Buscar:" + v.getText().toString(), Toast.LENGTH_LONG).show();
+
+                    // Ocultar teclado virtual
+                    InputMethodManager imm =
+                            (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+                    procesado = true;
+                }
+                return procesado;
+            }
+        });
+    }
+}
+3. La ejecución de la app mostrará un mensaje con el texto que escribas:
+
+Mostrar texto de EditText en Toast
+
+Cambios de Foco con OnFocusChangeListener
+Realizar acciones cuando un EditText se le otorga o remueve el foco en un layout es una necesidad frecuente en los desarrollos.
+
+Es aquí donde aparece la escucha OnFocusChangeListener con su controlador onFocusChange() para crear acciones personalizadas.
+
+Usa el método setOnFocusChangeListener() de la clase View para adjuntar una instancia de la escucha a tus campos de texto.
+
+Ejemplo:
+
+Cambiar el tinte de un ImageView que se encuentra al lado de un EditText que recibe el porcentaje de descuento de una venta.
+
+Solución
+
+La guía del Material Design para campos de texto determina que si vas a usar un icono para describir el contenido de un EditText con una sola línea, se debe cambiar el tinte de la imagen como reacción:
+
+EditText de una sola línea e icono descriptivo
+
+Así que veamos cómo resolver este problema:
+
+1. Añade otro layout al proyecto llamado actividad_icono_foco.xml.
+
+Su nodo principal es un RelativeLayout con un EditText centrado, cuyo tipo de entrada es para números decimales (numberDecimal).
+
+Alinea al centro con  izquierda un ImageView que limite con el campo de texto. Usa como fondo (android:src) un drawable de porcentaje de color gris y con tamaño de 24x24dp. Recuerda que Material Design Icons te otorga este recurso.
+
+Icono de porcentaje en Material Design
+
+La declaración XML quedaría de la siguiente forma:
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <EditText
+        android:id="@+id/campo_descuento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_toEndOf="@+id/icono_descuento"
+        android:layout_toRightOf="@+id/icono_descuento"
+        android:inputType="numberDecimal" />
+
+    <ImageView
+        android:id="@+id/icono_descuento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:src="@drawable/ic_porcentaje_gris_24dp" />
+</RelativeLayout>
+Cabe aclarar que usé el atributo android:focusableInTouchMode sobre el RelativeLayout para darle el foco en el momento que el usuario entre en Touch Mode. Esto evita que nuestro edit text sea el primero en tener el foco y no podamos ver la interacción de este ejemplo.
+
+2. Lo siguiente es añadir una escucha anónima OnFocusChangeListener a campo_descuento. Para ello usa setOnFocusChangeListener() y crea mediante las sugerencias de Android Studio una nueva implementación como la siguiente:
+
+EditText campoDescuento = (EditText) findViewById(R.id.campo_descuento);
+
+campoBusqueda.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        
+    }
+});
+El controlador posee solo dos parámetros:
+
+View v: Es la instancia del view al que se le alteró el foco, es decir, nuestro campo de texto.
+boolean hasFocus: Determina si v tiene foco (true) o no (false).
+3. Finalmente comprueba si el campo tiene el foco. En caso de ser afirmativo obtén el icono y cambia su tinte.
+
+Estas acciones son fáciles si tienes claros los siguientes conceptos:
+
+getDrawable(): Obtiene el objeto que representa el gráfico del icono.
+DrawableCompat: Nueva clase de compatibilidad que permite cambiar cualidades de un Drawable. Usa el método wrap() para crear una copia del drawable y luego setTint() para cambiar el color del filtro.
+ContextCompat: Clase de compatibilidad que te permitirá obtener recursos del proyecto. Usarás su método getColor() para extraer el recurso R.color.colorAccent definido en colors.xml.
+Ahora integra esas características dentro de onFocusChange() de la siguiente forma:
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+
+public class ActividadPrincipal extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.actividad_icono_foco);
+
+        EditText campoDescuento = (EditText) findViewById(R.id.campo_descuento);
+
+        campoBusqueda.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                // ¿v tiene el foco?
+                if(hasFocus){
+                    ImageView iconoDescuento = (ImageView) findViewById(R.id.icono_descuento);
+                    Drawable d = iconoDescuento.getDrawable();
+                    
+                    d = DrawableCompat.wrap(d);
+                    DrawableCompat.setTint(d,
+                            ContextCompat.getColor(ActividadPrincipal.this, R.color.colorAccent));
+
+                }
+            }
+        });
+    }
+}
+4. Ejecuta la aplicación y observa la interacción de cambio de tinte.
+
+Cambiar tint de ImageView
+
+Personalizar Estilo De Un EditText
+A continuación te dejo algunos de los casos de uso diario que podrían presentarse en tus desarrollos.
+
+Cambiar Color del Hint
+Si deseas modificar el color del texto que especificas en android:hint usa el atributo android:textColorHint. Solo debes poner la referencia del recurso tipo color o la definición hexadecimal.
+
+El siguiente ejemplo cambia el color del hint con el tono primario del esquema:
+
+<!-- Color de hint -->
+<EditText
+    android:id="@+id/campo_1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:hint="Color hint"
+    android:singleLine="true"
+    android:textColorHint="@color/colorPrimary" />
+Este es el resultado:
+
+Cambiar el color del hint en EditText
+
+Cambiar Color de la Selección
+Usa el atributo android:textColorHighLight con el recurso o definición hexadecimal que deseas establecer cuando el texto se encuentra seleccionado.
+
+<!-- Color selección -->
+<EditText
+    android:id="@+id/campo_2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:hint="Color selección"
+    android:singleLine="true"
+    android:textColorHighlight="#FFFFD4" />
+El código anterior cambia a un color amarillo pálido la selección:
+
+Cambiar color de selección de EditText
+
+Centrar Texto
+En este caso puedes usar el atributo android:gravity con la constante center para centrar el contenido vertical y horizontalmente.
+
+También existe un atributo cuyo mínimo de soporte es el SDK 17 llamado android:textAlignment. Usa el valor center si lo vas a usar para alinear al centro.
+
+Por ejemplo…
+
+<!-- Texto centrado -->
+<EditText
+    android:id="@+id/campo_3"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:hint="Texto centrado"
+    android:singleLine="true"
+    android:gravity="center" />
+Tanto el hint como el texto editable se desplazan al centro:
+
+Centrar texto en EditText
+
+Cambiar Color del Borde
+Para modificar el tinte del borde inferior de un EditText debes usar las propiedades colorControlNormal y colorControlActivated.
+
+El primer elemento se aplica para el borde en estado normal y el segundo en el estado enfocado.
+
+Sin embargo estos atributos deben ser declarados en un tema general del sistema como Theme.AppCompat.Light. Lo que quiere decir que debes crear un estilo personalizado en styles.xml y luego asignarlo al atributo android:theme del EditText.
+
+Ejemplo:
+
+Cambiar el color del borde inferior de un EditText a tonos de purpura
+
+Solución
+
+1. Abre tu archivo styles.xml y crea un nuevo estilo llamado CampoTextoPurpura que herede de Theme.AppCompat.Light. Asigna un tono púrpura 200 al color normal, 400 para el estado activo y 100 para el color de la selección.
+
+<style name="CampoTextoPurpura" parent="Theme.AppCompat.Light">
+    <item name="colorControlNormal">#CE93D8</item>
+    <item name="colorControlActivated">#AB47BC</item>
+    <item name="android:textColorHighlight">#E1BEE7</item>
+</style>
+2. Ahora abre el layout de la actividad principal y asigna en cualquier EditText el estilo declarado previamente.
+
+<!-- Color borde inferior -->
+<EditText
+    android:id="@+id/campo_4"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:hint="Color borde inferior"
+    android:inputType="textNoSuggestions"
+    android:singleLine="true"
+    android:theme="@style/CampoTextoPurpura" />
+3. Corre la app y comprueba que las líneas cambien en ambos estos. También observa el color de los controladores de selección.
+
+Cambiar color de borde en EditText
+
+Tamaño de la Fuente del Texto
+Si deseas aumentar o reducir el tamaño del texto de un EditText implementa el atributo android:textSize.
+
+Este atributo usa pixeles escalabes (scaleable pixels) o sp. Todo depende del propósito del texto, ya sea si es un título, subtitulo, etiqueta, texto normal, etc.
+
+El siguiente es un ejemplo para mostrar un campo de texto con tamaño display:
+
+<!-- Tamaño texto -->
+<EditText
+    android:id="@+id/campo_5"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="Texto centrado"
+    android:singleLine="true"
+    android:textSize="34sp" />
+Lo que produce:
+
+Cambiar tamaño de la fuente en EditText
+
+Implementar EditText full-width de Material Design
+Un campo de texto full-width es aquel que ocupa gran cantidad de espacio en un layout representando un área especial de edición para mensajes largos.
+
+Campo de texto Full-width en Material Design
+
+Para implementarlos solo configuramos las siguientes características de aspecto:
+
+background: Elimina la línea inferior usando la referencia @null para eliminar el fondo por defecto.
+gravity: Haz que el texto se oriente en la parte superior y alineado a la izquierda para rellenar el espacio de extremo a extremo.
+lines: Determina la cantidad de líneas visibles que habrá en la edición. También puedes usar android:height con match_parent para extender el tamaño a la totalidad del padre.
+padding: Usa 16dp estándar para mejorar la visibilidad del contenido.
+textAppearance: Modifica la apariencia del texto con un estilo propio o alguno del sistema. Por ejemplo TextAppearance.AppCompat.Body1.
+Con ello tendrás algo como:
+
+<!-- EditText Full-width -->
+<EditText
+    android:id="@+id/campo_6"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@null"
+    android:gravity="top|start"
+    android:hint="EditText ancho completo"
+    android:lines="10"
+    android:padding="16dp"
+    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+Incluso puedes agregar una cardview para mejorar la vista.
+
+Ejemplo de EditText full-width en Material Design
+
+Etiquetas Flotantes
+En Material Design los campos de texto deben usar etiquetas flotantes para ahorrar espacio y mantener una referencia constante del contenido del EditText.
+
+Básicamente el hint debe desplazarse hacia la parte superior izquierda en forma de texto indicativo para el campo de texto.
+
+Floating Labels en Material Design
+
+Esto se logra a través del elemento TextInputLayout de la librería de soporte para diseño que Google proporcionó.
+
+Si quieres saber más sobre este, lee mi artículo TextInputLayout En Android: Material Design
+
+Veamos un breve ejemplo.
+
+1. Abre tú archivo build.gradle (app) y añade la dependencia de la librería de diseño con la siguiente línea:
+
+dependencies {
+    
+    compile 'com.android.support:design:23.2.0'
+}
+2. En el layout de la actividad envuelve un EditText con una etiqueta <android.support.design.widget.TextInputLayout>. Básicamente este componente solo requiere dimensiones y un id por si deseas obtenerlo.
+
+<android.support.design.widget.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/campo_etiqueta_flotante"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Etiqueta flotante"
+        android:singleLine="true" />
+</android.support.design.widget.TextInputLayout>
+3. Ejecuta la app y verás que al activar el campo la etiqueta tiende a flotar en la parte superior:
+
+Etiqueta flotantes con TextInputLayoutetiqueta-flotante-textinputlayout
+
+etiqueta-flotante-textinputlayout
+
+Generar Sugerencias Con AutoCompleteTextView
+La clase AutoCompleteTextView es un EditText con la capacidad de desplegar sugerencias mientras el usuario tipea caracteres. Estas se listan en un menú desplegable. La opción elegida será reemplazada por el texto actual para simular el autocomplemento
+
+Autocomplementar en Android
+
+Para añadir las sugerencias es necesario un adaptador que provea los datos para inflar el contenido.
+
+Ejemplo
+
+Proveer la sugerencia de sitios online para tomar cursos de desarrollo de aplicaciones móviles por la letra M
+
+1. Lo primero es ubicar en el layout un AutoCompleteTextView con el id campo_sugerencias.
+
+<AutoCompleteTextView
+    android:id="@+id/campo_sugerencias"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="Sitio desarrollo móvil"
+    android:completionThreshold="1"
+    android:singleLine="true" />
+Nota: Si deseas cambiar la cantidad de caracteres mínima para que aparezcan sugerencias usa el atributo android:completionThreshold. O programáticamente setThreshold().
+
+2. Crea la fuente de datos para proporcionar las sugerencias de texto. En este caso usaré un arreglo estático simple con nombres imaginarios. Sin embargo en casos más realistas es necesario usar un adaptador con cursores asociados a una base de datos SQLite.
+
+En la actividad principal define:
+
+public static String[] SITIOS_MOVIL ={
+        "Max Android",
+        "Miriado Z",
+        "Movil IA",
+        "MUX",
+        "Masterd en Android",
+        "Minimum IOs Shippable",
+        "Melody Movil"
+};
+3. Ahora crea un ArrayAdapter con tipo String y toma el arreglo SITIOS_MOVIL como referencia. Una vez esté creada la instancia, asígnala al campo de sugerencias con el método setAdapter().
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+
+public class ActividadPrincipal extends AppCompatActivity {
+
+    public static String[] SITIOS_MOVIL = {
+            "Max Android",
+            "Miriado Z",
+            "Movil IA",
+            "MUX",
+            "Masterd en Android",
+            "Minimum IOs Shippable",
+            "Melody Movil"
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.actividad_principal);
+
+        AutoCompleteTextView campoSugerencias =
+                (AutoCompleteTextView) findViewById(R.id.campo_sugerencias);
+
+        ArrayAdapter<String> adaptador =
+                new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, SITIOS_MOVIL);
+
+        campoSugerencias.setAdapter(adaptador);
+    }
+}
+4. Ejecuta la aplicación y presiona la letra M para generar todas las sugerencias:
+
+Ejemplo de sugerencias con AutoCompleteTextView en Android
+
+Conclusión
+En este punto ya sabes demasiadas cosas sobre un EditText.
+
+A medida que vayas desarrollando tus propias apps verás que este elemento es indispensable en el uso de formularios de creación de entidades, búsquedas y envío de mensajes de texto.
+
+Recuerda tener en mente el estilo visual que usarás de forma general para así mismo personalizar la apariencia de tus campos de texto.
+
+También es indispensable tener en claro cómo usar la escucha de cambios de texto TextWatcher para cambios de texto; OnEditorActionListener para botones de acción y OnFocusChangeListener para procesar eventos de foco.
+
+Si quieres añadir un poco más de Material Design a tus campos, entonces crea etiquetas flotantes con la clase TextInputLayout.
+
+Y no olvides que cada que necesites sugerencias al buscar elementos desde un campo de texto la clase AutoCompleteTextView te estará esperando.
