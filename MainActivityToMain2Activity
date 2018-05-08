@@ -1,0 +1,44 @@
+Cómo lanzar el segundo Activity desde el primero, y viceversa
+Con los Activities ya creados, lo único que nos queda es programar lo que queremos que hagan los Views. En este caso, lo que tenemos que hacer es que al pulsar el botón cargue la otra View que tenemos asociada. Nada del otro mundo.
+
+Debemos escribir código en las dos actividades, en la MainActivity y en la AcercaDe.
+
+Código de la MainActivity
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button btn = (Button) findViewById(R.id.botonact1);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent (v.getContext(), AcercaDe.class);
+                startActivityForResult(intent, 0);
+            }
+        });
+    }
+}
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Código del AcercaDe
+
+public class AcercaDe extends AppCompatActivity {
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_acercade);
+
+            Button btn2 = (Button) findViewById(R.id.botonact2);
+            btn2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent2 = new Intent (v.getContext(), MainActivity.class);
+                    startActivityForResult(intent2, 0);
+                }
+            });
+        }
+    }
