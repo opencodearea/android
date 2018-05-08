@@ -1,0 +1,43 @@
+
+http://evilnapsis.com/2017/03/08/crear-y-manejar-un-listview-en-android-studio/
+
+Crear y Manejar un ListView en Android Studio
+Mar 8, 2017  Android Development 
+Un ListView es un componente de vista de lista que nos servirá para mostrar datos, tal como puede ser una lista de contactos, lista de productos, etc.
+
+En este articulo les mostrare como manejar un Listview usando el IDE Android Studio.
+
+Vamos a partir justo del ejemplo en el que nos quedamos en el articulo anterior http://evilnapsis.com/2017/02/20/botones-alertas-y-generar-apk-en-android-studio/
+
+
+Lo primero que haremos sera declara una variable tipo ListView, a la cual le asignaremos el objeto que agregamos anteriormente, usamos la funcion findViewById y colocaremos el ID que le colocamos al componente.
+
+1
+final ListView milista = (ListView)findViewById(R.id.milista);
+Ahora vamos a crear un Array con los valores de texto que colocaremos en la lista.
+
+1
+String[] values = new String[]{"Ironman","Capitan America","Hulk","Thor","Black Widow","Ant man","Spider man"};
+Vamos a crear un adaptador, que lo que hace es asignar la forma en que se mostraran los elementos.
+
+1
+ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values);
+Lo siguiente sera asigna el adaptador a la lista usando el método setAdapter y como parametro el adaptador que creamos, el adaptador incluye los elementos.
+
+1
+milista.setAdapter(adapter);
+Hecho esto nuestra lista se mostrara con los elementos que asignamos, el siguiente codigo es para asignar una acción para cuando se de click a cualquier elemento de la lista.
+
+
+milista.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+ 
+public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+int item = position;
+String itemval = (String)milista.getItemAtPosition(position);
+Toast.makeText(getApplicationContext(), "Position: "+ item+" - Valor: "+itemval, Toast.LENGTH_LONG).show();
+}
+ 
+});
+La acción que se ejecuta al dar click sobre el elemento es un Toast que es una especie de alerta.
+
+Resultado
