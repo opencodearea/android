@@ -1,3 +1,5 @@
+https://www.movilzona.es/tutoriales/android/desarrollo/curso-de-desarrollo-android-tema-11-android-studio-lanzar-un-segundo-activity-desde-otro-activity/
+
 Cómo lanzar el segundo Activity desde el primero, y viceversa
 Con los Activities ya creados, lo único que nos queda es programar lo que queremos que hagan los Views. En este caso, lo que tenemos que hacer es que al pulsar el botón cargue la otra View que tenemos asociada. Nada del otro mundo.
 
