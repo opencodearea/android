@@ -1,0 +1,166 @@
+Android – Como mostrar una barra de progreso con ProgressDialog
+
+++++++ http://gustavopeiretti.com/wp-content/uploads/2016/12/android_progressDialog_example.zip ++++++
+
+ProgressDialog es un diálogo que nos ayudará a mostrar un indicador de progreso en nuestra app de modo muy simple.
+
+Esta barra de progreso resultará muy útil cuando relicemos procesos que pueden demorar cierto tiempo y deseamos mostrar al usuario de nuestra aplicación como va este proceso. Evitará la ansiedad por parte de nuestro usuario sabiendo cómo avanza el resultado.
+progress_dialog_2
+
+Inicializar ProgressDialog
+Para inicializar ProgressDialog simplemente necesitamos un mensaje (opcional), el valor máximo, el estilo…
+
+ProgressDialog progressDialog;
+ 
+...
+progressDialog = new ProgressDialog(MainActivity.this);
+progressDialog.setMessage("Procesando....");
+progressDialog.setIndeterminate(false);
+progressDialog.setMax(100);
+progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+progressDialog.setCancelable(true);
+El valor progressDialog.setIndeterminate(boolean); en este caso no aplica porque conocemos el estado del progreso. Sin embargo podríamos utilizarlo en true si no conociéramos el avance del proceso y solo quisiéramos mostrar una barra moviéndose
+
+Actualizar el progreso de ProgressDialog
+Para esto ejecutaremos nuestra tarea de forma Asíncrona valiéndonos de AsyncTask.
+AsyncTask define tres métodos onPreExecute, onProgressUpdate, onPostExecute . Usaremos para iniciar la barra, actualizar el progreso y hacer ‘algo’ al finalizar.
+
+Simularemos dentro de doInBackground un proceso que demora cierto tiempo.
+
+La clave para actualizar el progreso esta en publishProgress(i) que envia un valor de progreso que será recibido en onProgressUpdate(Integer… progress) para que allí podamos updatear nuestra barra progressDialog.setProgress(progress[0]);
+
+Vemos tambien que podemos recibir un status al final de la ejecución y hacer algo con esto en onPostExecute(String result
+
+
+private class HardTask extends AsyncTask<String, Integer, String> {
+ 
+   private Context context;
+ 
+   public HardTask(Context context) {
+       this.context = context;
+   }
+ 
+   @Override
+   protected String doInBackground(String... params) {
+       for (int i = 0; i <= 200; i++) {
+           publishProgress(i);
+           try {
+               // simulate hard work
+               Thread.sleep(100);
+           } catch (InterruptedException e) {
+               e.printStackTrace();
+               return PROCESS_ERROR;
+           }
+       }
+       return PROCESS_OK;
+   }
+ 
+   @Override
+   protected void onPreExecute() {
+       super.onPreExecute();
+       progressDialog.show();
+   }
+ 
+   @Override
+   protected void onProgressUpdate(Integer... progress) {
+       super.onProgressUpdate(progress);
+       progressDialog.setProgress(progress[0]);
+   }
+ 
+   @Override
+   protected void onPostExecute(String result) {
+       progressDialog.dismiss();
+       if (PROCESS_OK.equals(result)) {
+           Toast.makeText(context, "Process OK " + result, Toast.LENGTH_LONG).show();
+       } else {
+           Toast.makeText(context, "Process ERROR " + result, Toast.LENGTH_LONG).show();
+       }
+   }
+}
+De este modo queda nuestro ProgressDialog
+
+
+public class MainActivity extends AppCompatActivity {
+ 
+    private static final String PROCESS_OK = "PROCESS_OK";
+    private static final String PROCESS_ERROR = "PROCESS_ERROR";
+    private ProgressDialog progressDialog;
+ 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+ 
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("Procesando....");
+                progressDialog.setMax(100);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(true);
+ 
+    }
+ 
+ 
+    public void runProgressBar(View view) {
+ 
+        final HardTask downloadTask = new HardTask(MainActivity.this);
+        downloadTask.execute("some_param");
+ 
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                downloadTask.cancel(true);
+            }
+        });
+    }
+ 
+ 
+    private class HardTask extends AsyncTask<String, Integer, String> {
+ 
+        private Context context;
+ 
+        public HardTask(Context context) {
+            this.context = context;
+        }
+ 
+        @Override
+        protected String doInBackground(String... params) {
+            for (int i = 0; i <= 200; i++) {
+                publishProgress(i);
+                try {
+                    // simulate hard work
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    return PROCESS_ERROR;
+                }
+            }
+            return PROCESS_OK;
+        }
+ 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.show();
+        }
+ 
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+            progressDialog.setProgress(progress[0]);
+        }
+ 
+        @Override
+        protected void onPostExecute(String result) {
+            progressDialog.dismiss();
+            if (PROCESS_OK.equals(result)) {
+                Toast.makeText(context, "Process OK " + result, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, "Process ERROR " + result, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+ 
+}
+
+http://gustavopeiretti.com/android-mostrar-una-barra-progreso-progressdialog/
+
