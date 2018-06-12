@@ -1,0 +1,248 @@
+manifest++++
+
+<uses-permission android:name="android.permission.INTERNET"/>
+
+
+package com.farrell.webservice;
+
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.util.Scanner;
+
+
+public class MainActivity extends AppCompatActivity {
+    ProgressDialog dialog;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+
+
+    public void loadCountryInfo(View view) {
+        EditText cn = (EditText) findViewById(R.id.CountryName);
+        String countryName = cn.getText().toString();
+        String strURL = "http://restcountries.eu/rest/v1/name/" + countryName;
+
+
+        if (countryName.length() == 0) {
+            Toast.makeText(this, "No pais especificado", Toast.LENGTH_SHORT).show();
+        } else {
+            wsAsyncTask ws = new wsAsyncTask();
+            ws.execute(strURL);
+        }
+
+    }
+
+
+    //Sub class wsAsyncTask
+    private class wsAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String[] strURL) {
+
+            return requestWebService(strURL[0]);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(MainActivity.this);
+            dialog.setTitle("Por favor espere..");
+            dialog.setMessage("Cargando...");
+            dialog.setCancelable(false);
+            dialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            TextView tcapital = (TextView) findViewById(R.id.capital);
+            TextView tarea = (TextView) findViewById(R.id.area);
+            TextView tpopulation = (TextView) findViewById(R.id.population);
+            TextView tcurrency = (TextView) findViewById(R.id.currency);
+            try {
+                JSONArray rootArray = new JSONArray(result);
+                JSONObject rootObject = rootArray.getJSONObject(0);
+                tcapital.setText(rootObject.optString("capital"));
+                tarea.setText(rootObject.optString("area"));
+                tpopulation.setText(rootObject.optString("population"));
+                tcurrency.setText(rootObject.optJSONArray("currencies").getString(0));
+            } catch (Exception e) {
+                Toast.makeText(MainActivity.this, "pais incorrecto, vuelva ingresar un dato valido", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+
+            dialog.dismiss();
+        }
+
+        public String requestWebService(String serviceUrl) {
+            HttpURLConnection urlConnection = null;
+            try {
+                // create connection
+                URL urlToRequest = new URL(serviceUrl);
+                urlConnection = (HttpURLConnection) urlToRequest.openConnection();
+                urlConnection.setConnectTimeout(15000);
+                urlConnection.setReadTimeout(10000);
+                // get JSON data
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                // converting InputStream into String
+                Scanner scanner = new Scanner(in);
+                String strJSON = scanner.useDelimiter("\\A").next();
+                scanner.close();
+                return strJSON;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                // URL is invalid
+            } catch (SocketTimeoutException e) {
+                e.printStackTrace();
+                // data retrieval or connection timed out
+            } catch (IOException e) {
+                e.printStackTrace(); // could not read response body// (could not create input stream)
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+            }
+            return null;
+        }
+    }
+
+}
+******************************************************
+xml**********************
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.muneeb.webservicesapplication.MainActivity">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/CountryName"
+        android:layout_marginTop="53dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/btnFindInfo"
+        android:layout_toStartOf="@+id/btnFindInfo"
+        android:inputType="text"
+        android:hint="Enter Country Name"/>
+
+    <Button
+        android:id="@+id/btnFindInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/CountryName"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:onClick="loadCountryInfo"
+        android:text="@string/find_info" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/CountryName"
+        android:layout_marginTop="45dp"
+        android:text="@string/capital_city"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/capital"
+        android:layout_alignTop="@+id/textView"
+        android:layout_toRightOf="@+id/textView"
+        android:layout_alignRight="@+id/CountryName"
+        android:layout_alignEnd="@+id/CountryName" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/area"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="33dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/area"
+        android:layout_alignBottom="@+id/textView2"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_alignRight="@+id/capital"
+        android:layout_alignEnd="@+id/capital" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/population"
+        android:id="@+id/textView3"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="36dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/population"
+        android:layout_alignBottom="@+id/textView3"
+        android:layout_toRightOf="@+id/textView3"
+        android:layout_alignRight="@+id/area"
+        android:layout_alignEnd="@+id/area" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/currency"
+        android:id="@+id/textView4"
+        android:layout_below="@+id/textView3"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="42dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/currency"
+        android:layout_alignBottom="@+id/textView4"
+        android:layout_toRightOf="@+id/textView4"
+        android:layout_alignRight="@+id/population"
+        android:layout_alignEnd="@+id/population" />
+</RelativeLayout>
+
